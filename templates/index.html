@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>실시간 날씨 대시보드</title>
+</head>
+<body>
+    <h1>오늘의 초단기 실황 날씨</h1>
+    <table border="1">
+        <tr>
+            <th>항목</th>
+            <th>값</th>
+            <th>단위</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>{{ item['category'] }}</td>
+            <td>{{ item['obsrValue'] }}</td>
+            <td>
+                {% if item['category'] == 'T1H' %} ℃
+                {% elif item['category'] == 'RN1' %} mm
+                {% elif item['category'] == 'WSD' %} m/s
+                {% else %} -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
