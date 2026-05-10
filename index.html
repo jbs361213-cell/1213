@@ -1,11 +1,68 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>실시간 날씨 대시보드</title>
+  <meta charset="UTF-8">
+  <title>실시간 날씨 대시보드</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #2c3e50; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f4f4f4; }
+  </style>
 </head>
 <body>
-    <h1>오늘의 초단기 실황 날씨</h1>
-    <p>이 페이지는 GitHub Pages에서 테스트용으로 표시되는 정적 HTML입니다.</p>
+  <h1>오늘의 초단기 실황 날씨</h1>
+  <table id="weatherTable">
+    <tr>
+      <th>항목</th>
+      <th>값</th>
+      <th>단위</th>
+    </tr>
+  </table>
+
+  <script>
+    const API_KEY = "1a10badc8e7f0623a5db101c1f12e6eb6353993911572f56fd24fd6a0a21febd";
+    const url = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst";
+    const params = new URLSearchParams({
+      serviceKey: API_KEY,
+      numOfRows: 10,
+      pageNo: 1,
+      dataType: "JSON",
+      base_date: "20260510", // 오늘 날짜
+      base_time: "1100",     // 발표 시간
+      nx: 55,                // 서울 격자 X
+      ny: 127                // 서울 격자 Y
+    });
+
+    fetch(`${url}?${params}`)
+      .then(response => response.json())
+      .then(data => {
+        const items = data.response.body.items.item;
+        const table = document.getElementById("weatherTable");
+
+        items.forEach(item => {
+          const row = document.createElement("tr");
+          const category = document.createElement("td");
+          const value = document.createElement("td");
+          const unit = document.createElement("td");
+
+          category.textContent = item.category;
+          value.textContent = item.obsrValue;
+
+          if (item.category === "T1H") unit.textContent = "℃";
+          else if (item.category === "RN1") unit.textContent = "mm";
+          else if (item.category === "WSD") unit.textContent = "m/s";
+          else unit.textContent = "-";
+
+          row.appendChild(category);
+          row.appendChild(value);
+          row.appendChild(unit);
+          table.appendChild(row);
+        });
+      })
+      .catch(error => console.error("API 호출 오류:", error));
+  </script>
 </body>
 </html>
+
